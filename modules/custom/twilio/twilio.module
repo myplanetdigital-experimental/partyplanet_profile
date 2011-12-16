@@ -1,0 +1,144 @@
+<?php
+
+/**
+ * @file Twilio module
+ */
+
+/**
+ * Implements hook_menu
+ */
+function twilio_menu() {
+  $items['admin/config/system/twilio'] = array(
+    'title' => t('Twilio'),
+    'description' => t('Administer your twilio settings'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('twilio_admin_form'),
+    'access callback' => TRUE,
+  );
+  $items['admin/config/system/twilio/test'] = array(
+    'title' => t('Twilio Message Test'),
+    'description' => t('Test your twilio SMS sending'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('twilio_test_form'),
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Administration form for twilio settings
+ */
+function twilio_admin_form($form, &$form_state) {
+  $form['twilio_path'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Twilio Path'),
+    '#default_value' => variable_get('twilio_path'),
+    '#description' => t('Enter the full path to the twilio library. e.g. sites/all/libraries/twilio/Services/Twilio.php'),
+  );
+  $form['twilio_account'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Twilio Account ID'),
+    '#default_value' => variable_get('twilio_account'),
+    '#description' => t('Enter your Twilio account id'),
+  );
+  $form['twilio_token'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Twilio token ID'),
+    '#default_value' => variable_get('twilio_token'),
+    '#description' => t('Enter your Twilio token id'),
+  );
+  $form['twilio_number'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => t('Twilio Phone Number'),
+    '#default_value' => variable_get('twilio_number'),
+    '#description' => t('Enter your Twilio phone number'),
+  );
+  return system_settings_form($form); 
+}
+
+/**
+ * Administrative testing form for SMS
+ */
+function twilio_test_form($form, &$form_state) {
+  $form['number'] = array(
+    '#type' => 'textfield',
+    '#required' => TRUE,
+    '#title' => 'Phone Number',
+  );
+  $form['message'] = array(
+    '#type' => 'textarea',
+    '#required'=> TRUE,
+    '#title' => 'Message',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send SMS'),
+  );
+  return $form;
+}
+
+/**
+ * Validation function for administrative testing form
+ */
+function twilio_test_form_validate($form, &$form_state) {  
+}
+
+/**
+ * Submit handler for administrative testing form
+function twilio_test_form_submit($form, &$form_state) {
+  twilio_send($form_state['values']['number'], $form_state['values']['message']);
+  drupal_set_message(t('Your message has been sent'));
+}
+
+/**
+ * Callback for sending messages.
+ */
+function twilio_send($number, $message) {
+  $number = preg_replace("/[^0-9]/", '', $number);
+  $number = trim($number);
+  $number = ltrim($number, '0'); // Remove leading zeros
+  $index = strpos($number, '1');
+  if ($index === FALSE || $index > 0) {
+    $number = '1' . $number;
+  }
+  return sms_twilio_command('sendmsg', array('number' => $number, 'message' => $message));
+}
+
+/**
+ * Executes a command using the Twilio API
+ */
+function sms_twilio_command($command = 'auth', $data = array(), $config = NULL, $account = '') {
+  // Include the PHP TwilioRest library
+  require_once variable_get('twilio_path');
+      
+  // Twilio REST API version
+  // $ApiVersion = "2008-08-01";
+
+  // Set our AccountSid and AuthToken
+  $AccountSid = variable_get('twilio_account');
+  $AuthToken = variable_get('twilio_token');
+
+  // Instantiate a new Twilio Rest Client
+  $client = new Services_Twilio($AccountSid, $AuthToken);
+ 
+  switch ($command) {
+    case 'sendmsg':
+      // Check if the message requires unicode handling
+        $response = $client->account->sms_messages->create(variable_get('twilio_number'), $data['number'], $data['message']);
+      break;
+  }
+  watchdog('sms_twilio', print_r($response, TRUE));
+  // Check for HTTP errors
+  if($response->IsError) {
+    $result = array('status' => FALSE, 'message' => t('An error occured during the HTTP request: @error', array('@error' => $response->ErrorMessage)));
+  }
+  else {
+    $result = array('status' => TRUE, 'data' => t('Message sent to @number', array('@number' => $data['number'])));
+  }
+  return $result;
+}
