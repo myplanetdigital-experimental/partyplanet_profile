@@ -13,6 +13,12 @@ projects[features][version] = 1.0-beta4
 projects[feeds][subdir] = contrib
 projects[feeds][version] = 2.0-alpha4
 
+projects[feeds_querypath_parser][subdir] = contrib
+projects[feeds_querypath_parser][version] = 1.0-beta1
+
+projects[feeds_xpathparser][subdir] = contrib
+projects[feeds_xpathparser][version] = 1.0-beta3
+
 projects[job_scheduler][subdir] = contrib
 projects[job_scheduler][version] = 1.0-beta3
 
@@ -21,6 +27,9 @@ projects[mailhandler][version] = 2.3
 
 projects[oauth][subdir] = contrib
 projects[oauth][version] = 3.0-alpha2
+
+projects[querypath][subdir] = contrib
+projects[querypath][version] = 2.0
 
 projects[rules][subdir] = contrib
 projects[rules][version] = 2.0
