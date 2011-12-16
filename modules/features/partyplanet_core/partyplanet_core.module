@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Party Planet Core feature.
+ */
+
+include_once('partyplanet_core.features.inc');
