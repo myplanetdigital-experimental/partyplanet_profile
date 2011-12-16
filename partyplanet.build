@@ -1,0 +1,9 @@
+api = 2
+core = 7.x
+
+projects[drupal] = 7.10
+
+projects[partyplanet][type] = profile
+projects[partyplanet][directory_name] = partyplanet
+projects[partyplanet][download][type] = git
+projects[partyplanet][download][url] = git@github.com:myplanetdigital/partyplanet_profile.git
