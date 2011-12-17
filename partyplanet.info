@@ -2,6 +2,12 @@ name = PartyPlanet
 description = This is a pretty boss installation profile that allows people to know what the fuck is going on.
 version = VERSION
 core = 7.x
+files[] = partyplanet.profile
+
+; BASE MODULES
 dependencies[] = block
 dependencies[] = dblog
-files[] = partyplanet.profile
+dependencies[] = features
+
+; FEATURES
+dependencies[] = partyplanet_core
