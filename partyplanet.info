@@ -1,5 +1,5 @@
 name = PartyPlanet
-description = This is a pretty boss installation profile that allows people to know what the fuck is going on.
+description = This is a pretty boss installation profile that allows people to know what the sam hill is going on.
 version = VERSION
 core = 7.x
 files[] = partyplanet.profile
